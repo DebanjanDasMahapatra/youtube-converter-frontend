@@ -1,0 +1,22 @@
+.custom-text {
+    background: none;
+    text-shadow: 1px;
+    font-size: large;
+    border-color: sandybrown;
+}
+
+.custom-input {
+    border-radius: 0.5rem;
+    background: none;
+    border-color: sandybrown;
+}
+
+.progress-bar.indeterminate {
+    position: relative;
+    animation: progress-indeterminate 3s linear infinite;
+}
+
+.custom-button {
+    border-radius: 30px;
+    padding: 5px 20px;
+}
