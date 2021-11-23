@@ -16,12 +16,9 @@ export class SocketIO {
 		return this.videoId;
 	}
 
-	constructor(private n: string, private progressCallback: Function, private completeCallback: Function) {
+	constructor(private n: string, private progressCallback: Function, private completeCallback: Function, private permission: boolean) {
 		this.videoId = n;
-		Notification.requestPermission(result => {
-			console.log(result)
-			this.notificationEnabled = result == 'granted';
-		});
+		this.notificationEnabled = permission;
 		this.socket = io(environment.baseURL, { query: { videoId: this.videoId } });
 		this.socket.on('connect', () => {
 			console.warn("Connected");
@@ -42,8 +39,10 @@ export class SocketIO {
 			) {
 				this.socket.disconnect();
 				completeCallback();
-				const notification = new Notification("[YTD] Conversion Complete!", { body: 'Your audio is now ready for downloading', icon: "../../favicon.ico" });
-				notification.onshow = () => { setTimeout(() => { notification.close(); }, 3000); }
+				navigator.serviceWorker.getRegistration().then(notification => {
+					const n = notification?.showNotification("[YTD] Conversion Complete!", { body: 'Your audio is now ready for downloading', icon: "../../favicon.ico" })
+				})
+
 			}
 		});
 		this.socket.on('download-error', ({ videoId, error }) => {

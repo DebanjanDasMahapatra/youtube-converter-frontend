@@ -24,6 +24,7 @@ export class AppComponent implements OnInit {
     secs: 0
   }
   url: String = environment.baseURL;
+  notificationEnabled: boolean = false;
   constructor(private downloadservice: DownloadService) {
   }
 
@@ -38,6 +39,10 @@ export class AppComponent implements OnInit {
       secs: 0
     }
     this.speed = 0;
+    Notification.requestPermission(result => {
+      // console.log(result)
+      this.notificationEnabled = result == 'granted';
+    });
   }
 
   onSubmit(data: NgForm) {
@@ -70,28 +75,12 @@ export class AppComponent implements OnInit {
       this.speed = Number(Number(speed / 1024).toFixed(3));
     }, () => {
       this.isDownloaded = true;
-    }).initiateDownload();
+    }, this.notificationEnabled).initiateDownload();
+
     this.message = "Your Video is being converted. Please wait!!"
     this.progbar = true;
     data.reset();
-    // return;
-    // this.downloadservice.getMp3(this.video_id).subscribe((res) => {
-    //   console.log(res);
-    //   if (!res.status) {
-    //     this.isDownloaded = false;
-    //     this.progbar = true;
-    //     this.message = res.message;
-    //   }
-    //   else if (res.status) {
-    //     this.isDownloaded = true;
-    //     data.reset();
-    //   }
-    //   else {
-    //     this.isDownloaded = false;
-    //   }
-    // }, err => {
-    //   console.warn(err);
-    // })
+
   }
 
   resetEverything(): void {
