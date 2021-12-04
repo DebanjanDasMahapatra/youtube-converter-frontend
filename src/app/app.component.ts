@@ -48,20 +48,17 @@ export class AppComponent implements OnInit {
   onSubmit(data: NgForm) {
     // console.log(data.value);
     var link = data.value.link;
-    if (link.includes('youtu.be')) {
-      var arr = link.split("/");
-      this.video_id = arr[arr.length - 1]
-      // console.log(arr[arr.length - 1]);
+    var regExp = /^.*((youtu.be\/)|(v\/)|(\/u\/\w\/)|(embed\/)|(shorts\/)|(watch\?))\??v?=?([^#&?]*).*/;
+    var match = link.match(regExp);
+    console.log(match);
+    this.video_id = (match && match[8].length == 11) ? match[8] : false;
+
+    if (!this.video_id) {
+      alert("Video Id is invalid");
+      data.reset();
+      return;
     }
-    else {
-      this.video_id = link.split('v=')[1];
-      var ampersandPosition = this.video_id.indexOf('&');
-      if (ampersandPosition != -1) {
-        this.video_id = this.video_id.substring(0, ampersandPosition);
-      }
-      // console.log(this.video_id);
-    }
-    if (!(/^[a-zA-Z0-9-_]{11}$/.test(this.video_id))) {
+    else if (!(/^[a-zA-Z0-9-_]{11}$/.test(this.video_id))) {
       alert("Video Id is invalid");
       data.reset();
       return;
