@@ -32,17 +32,16 @@ export class SocketIO {
 			if (this.videoId == videoId)
 				progressCallback(progress, remainingTime, speed);
 		});
-		this.socket.on('download-complete', ({ videoId }) => {
-			console.error({ videoId });
-			if (this.notificationEnabled && this.videoId == videoId
-				// && !document.hasFocus()
-			) {
+		this.socket.on('download-complete', ({ videoId, videoName }) => {
+			console.error({ videoId, videoName });
+			if (this.videoId == videoId) {
 				this.socket.disconnect();
-				completeCallback();
+				completeCallback(videoName);
+			}
+			if (this.notificationEnabled) {
 				navigator.serviceWorker.getRegistration().then(notification => {
-					const n = notification?.showNotification("[YTD] Conversion Complete!", { body: 'Your audio is now ready for downloading', icon: "../../favicon.ico" })
+					const n = notification?.showNotification("Conversion Complete!", { body: 'Your audio is now ready for downloading', icon: "../../favicon.ico" })
 				})
-
 			}
 		});
 		this.socket.on('download-error', ({ videoId, error }) => {

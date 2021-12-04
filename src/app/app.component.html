@@ -46,8 +46,7 @@
           </ng-container>
           <ng-container *ngIf="isDownloaded">
             <p>Your audio is ready to be downloaded.</p>
-            <a [href]="url+'/download/'+video_id" type="button" class="btn btn-success btn-block custom-button"
-              download>Download
+            <a [href]="url+'/download/'+videoName" type="button" class="btn btn-success btn-block custom-button" download>Download
               Now</a>
             <button type="button" class="btn btn-secondary btn-block custom-button" (click)="resetEverything()">Convert
               Another</button>

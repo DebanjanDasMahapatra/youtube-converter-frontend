@@ -12,6 +12,7 @@ import { SocketIO } from './socket';
 
 export class AppComponent implements OnInit {
 
+  videoName: string = '';
   title = 'youtube-converter';
   progbar: boolean = false;
   message: string = "";
@@ -50,7 +51,7 @@ export class AppComponent implements OnInit {
     var link = data.value.link;
     var regExp = /^.*((youtu.be\/)|(v\/)|(\/u\/\w\/)|(embed\/)|(shorts\/)|(watch\?))\??v?=?([^#&?]*).*/;
     var match = link.match(regExp);
-    console.log(match);
+    // console.log(match);
     this.video_id = (match && match[8].length == 11) ? match[8] : false;
 
     if (!this.video_id) {
@@ -70,8 +71,10 @@ export class AppComponent implements OnInit {
         secs: remainingTime % 60
       }
       this.speed = Number(Number(speed / 1024).toFixed(3));
-    }, () => {
+    }, (videoName: string) => {
+      this.videoName = videoName;
       this.isDownloaded = true;
+
     }, this.notificationEnabled).initiateDownload();
 
     this.message = "Your Video is being converted. Please wait!!"
