@@ -9,50 +9,57 @@ export class SocketIO {
 	id: string = '';
 	private notificationEnabled: boolean = false;
 
-	public set username(v: string) {
-		this.videoId = v;
-	}
-	public get value(): string {
-		return this.videoId;
-	}
-
-	constructor(private n: string, private progressCallback: Function, private completeCallback: Function, private permission: boolean) {
-		this.videoId = n;
+	constructor(private progressCallback: (progress: number, remainingTime: number, speed: number) => void, private completeCallback: (videoName: string) => void, private errorCallback: (message: string) => void, private disconnectCallback: () => void, private reconnectCallback: () => void, private maintenanceStartCallback: () => void, private maintenanceEndCallback: () => void, private permission: boolean) {
 		this.notificationEnabled = permission;
-		this.socket = io(environment.baseURL, { query: { videoId: this.videoId } });
+		this.socket = io(environment.baseURL);
 		this.socket.on('connect', () => {
 			console.warn("Connected");
 			this.id = this.socket.id;
+			reconnectCallback();
 		});
-		this.socket.on('disconnect', () => {
+		this.socket.on('disconnect', (reason) => {
 			console.error("Disconnected");
+			if (reason && reason == 'transport close') {
+				disconnectCallback()
+			}
+		});
+		this.socket.on('maintenance-start', () => {
+			maintenanceStartCallback()
+		});
+		this.socket.on('maintenance-end', () => {
+			maintenanceEndCallback()
 		});
 		this.socket.on('download-progress', ({ videoId, progress, remainingTime, speed }) => {
-			// console.warn({ videoId, progress });
 			if (this.videoId == videoId)
 				progressCallback(progress, remainingTime, speed);
 		});
 		this.socket.on('download-complete', ({ videoId, videoName }) => {
-			console.error({ videoId, videoName });
 			if (this.videoId == videoId) {
-				this.socket.disconnect();
 				completeCallback(videoName);
+				this.cancelOrCompleteDownload(videoId)
 			}
 			if (this.notificationEnabled) {
 				navigator.serviceWorker.getRegistration().then(notification => {
-					const n = notification?.showNotification("Conversion Complete!", { body: 'Your audio is now ready for downloading', icon: "../../favicon.ico" })
+					const n = notification?.showNotification("Conversion Completed!", { body: 'Your Audio is now Ready for Downloading :)', icon: "../../favicon.ico" })
 				})
 			}
 		});
 		this.socket.on('download-error', ({ videoId, error }) => {
-			// console.warn({ videoId, progress });
-			if (this.videoId == videoId)
-				console.error(error);
+			if (this.videoId == videoId) {
+				errorCallback(error)
+				this.cancelOrCompleteDownload(videoId)
+			}
 		});
 	}
 
-	initiateDownload(): void {
+	initiateDownload(videoId: string): void {
+		this.videoId = videoId
 		if (this.socket != null)
-			this.socket.emit('download-initiate');
+			this.socket.emit('download-initiate', videoId);
+	}
+
+	cancelOrCompleteDownload(videoId: string): void {
+		if (this.socket != null)
+			this.socket.emit('download-cancel-or-complete', videoId);
 	}
 }
