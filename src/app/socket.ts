@@ -4,7 +4,6 @@ import { environment } from 'src/environments/environment';
 export class SocketIO {
 
 	socket: Socket;
-
 	videoId: string = '';
 	id: string = '';
 	private notificationEnabled: boolean = false;
