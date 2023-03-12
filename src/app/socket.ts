@@ -9,7 +9,7 @@ export class SocketIO {
 	id: string = '';
 	private notificationEnabled: boolean = false;
 
-	constructor(private progressCallback: (progress: number, remainingTime: number, speed: number) => void, private completeCallback: (videoName: string) => void, private errorCallback: (message: string) => void, private disconnectCallback: () => void, private reconnectCallback: () => void, private maintenanceStartCallback: () => void, private maintenanceEndCallback: () => void, private permission: boolean) {
+	constructor(private startCallback: () => void, private progressCallback: (progress: number, remainingTime: number, speed: number) => void, private completeCallback: (videoName: string) => void, private errorCallback: (message: string) => void, private disconnectCallback: () => void, private reconnectCallback: () => void, private maintenanceStartCallback: () => void, private maintenanceEndCallback: () => void, private permission: boolean) {
 		this.notificationEnabled = permission;
 		this.socket = io(environment.baseURL);
 		this.socket.on('connect', () => {
@@ -28,6 +28,10 @@ export class SocketIO {
 		});
 		this.socket.on('maintenance-end', () => {
 			maintenanceEndCallback()
+		});
+		this.socket.on('download-start', (videoId) => {
+			if (this.videoId == videoId)
+				startCallback();
 		});
 		this.socket.on('download-progress', ({ videoId, progress, remainingTime, speed }) => {
 			if (this.videoId == videoId)

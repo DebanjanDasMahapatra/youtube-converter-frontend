@@ -23,6 +23,7 @@ export class AppComponent implements OnInit, OnDestroy {
 	lastUpdated: String = environment.lastUpdated;
 	videoId: string = "";
 	videoName: string = '';
+	connectionMessage: string = 'Connecting to Server...';
 	speed: number = 0;
 	progress: number = 0;
 	message: { type: "success" | "warning" | "danger", text: string } = { type: "warning", text: "" }
@@ -34,7 +35,10 @@ export class AppComponent implements OnInit, OnDestroy {
 
 	ngOnInit(): void {
 		this.resetEverything()
-		this.socketIO = new SocketIO((progress: number, remainingTime: number, speed: number) => {
+		this.socketIO = new SocketIO(() => {
+			// startCallback
+			this.isConverting = true
+		}, (progress: number, remainingTime: number, speed: number) => {
 			// progressCallback
 			this.progress = progress;
 			this.remTime = {
@@ -53,6 +57,7 @@ export class AppComponent implements OnInit, OnDestroy {
 			this.resetEverything()
 		}, () => {
 			// disconnectCallback
+			this.connectionMessage = 'Got Disconnected, Trying to Reconnect...'
 			this.disconnected = true
 		}, () => {
 			// reconnectCallback
@@ -75,7 +80,6 @@ export class AppComponent implements OnInit, OnDestroy {
 			this.videoId = match[8]
 			if (this.videoId && /^[a-zA-Z0-9-_]{11}$/.test(this.videoId)) {
 				this.socketIO?.initiateDownload(this.videoId);
-				this.isConverting = true;
 				data.reset();
 				return;
 			}
@@ -114,6 +118,7 @@ export class AppComponent implements OnInit, OnDestroy {
 		this.videoId = "";
 		this.videoName = ""
 		this.hasDownloaded = false;
+		this.message.text = ""
 		this.progress = 0;
 		this.remTime = { mins: 0, secs: 0 }
 		this.speed = 0;

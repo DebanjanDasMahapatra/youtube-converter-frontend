@@ -54,7 +54,7 @@
 					<ng-container *ngIf="disconnected">
 						<br>
 						<div class="alert alert-danger" role="alert">
-							<strong><em>Got Disconnected, Trying to Reconnect...</em></strong>
+							<strong><em>{{connectionMessage}}</em></strong>
 						</div>
 					</ng-container>
 					<ng-container *ngIf="maintenance">
