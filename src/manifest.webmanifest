@@ -1,8 +1,8 @@
 {
   "name": "Youtube Video to MP3 Converter",
   "short_name": "YVTAC",
-  "theme_color": "#353535",
-  "background_color": "#fafafa",
+  "theme_color": "#303030",
+  "background_color": "#000000",
   "display": "standalone",
   "scope": "./",
   "start_url": "./",

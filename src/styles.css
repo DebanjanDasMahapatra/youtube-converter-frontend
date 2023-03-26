@@ -1,6 +1,11 @@
-body {
-    background: repeating-linear-gradient(to right, #606060, white);
+html, body {
     margin: 0;
-    width: 100%;
+    width: 100% !important;
+    height: 100% !important;
     overflow-x: hidden !important;
+}
+
+body {
+    background: linear-gradient(to right, #606060, white);
+    background-repeat: no-repeat !important;
 }
