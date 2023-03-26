@@ -1,59 +1,75 @@
 <div class="custom-navbar">
-  <h4>Youtube to MP3 converter</h4>
+	<h4 class="text-center">Youtube to MP3 Converter</h4>
 </div>
 
 <div class="please-do-center">
-  <div class="row">
-    <div class="col-sm-3"></div>
-    <div class="col-sm-6">
-
-      <div class="card mx-auto">
-        <img class="card-img-top" style="max-height: 300px;"
-          src="https://images.unsplash.com/photo-1611532736579-6b16e2b50449?ixid=MnwxMjA3fDB8MHxzZWFyY2h8MXx8YXVkaW8lMjA2MDB4NDAwfGVufDB8fDB8fA%3D%3D&ixlib=rb-1.2.1&auto=format&fit=crop&w=500&q=60"
-          alt="Card image cap">
-        <div class="card-body">
-          <!-- <div >
-          <h3>Youtube to MP3 converter</h3>
-        </div> -->
-          <ng-container *ngIf="!progbar">
-            <form (ngSubmit)="onSubmit(f)" #f="ngForm">
-              <div class="card-body">
-                <h5 class="card-title" style="font-family: 'Permanent Marker', cursive; font-size: larger ;">Paste
-                  Youtube
-                  Video
-                  link below</h5>
-                <br>
-                <input class="form-control" type="text" ngModel name="link" placeholder=" Paste Link..." id="link"
-                  #link="ngModel" required [class.is-invalid]="(link.dirty || link.touched) && link.invalid"
-                  [class.is-valid]="(link.dirty || link.touched) && !link.invalid" />
-                <small class="text-danger" *ngIf="link.invalid && (link.dirty || link.touched)"> Please enter video link
-                </small>
-                <br>
-                <br>
-                <button type="submit" [disabled]="f.invalid" class="btn btn-dark" style="color:white;">Convert</button>
-              </div>
-            </form>
-            <br>
-          </ng-container>
-          <ng-container *ngIf="progbar && !isDownloaded">
-            <p style="font-weight: bolder;">{{message}}</p>
-            <div class="progress" style="position: relative;">
-              <div class="progress-bar progress-bar-striped progress-bar-animated" [ngStyle]="{'width': pg+'%'}"></div>
-            </div>
-            <br />
-            <p><b>Time Remaining:</b> {{remTime.mins + ' mins ' + remTime.secs + ' secs'}}<br /><b>Conversion Speed:
-              </b>{{speed}} KB/s</p>
-          </ng-container>
-          <ng-container *ngIf="isDownloaded">
-            <p>Your audio is ready to be downloaded.</p>
-            <a [href]="url+'/download/'+videoName" type="button" class="btn btn-success btn-block custom-button" download>Download
-              Now</a>
-            <button type="button" class="btn btn-secondary btn-block custom-button" (click)="resetEverything()">Convert
-              Another</button>
-          </ng-container>
-
-        </div>
-      </div>
-      <div class="col-sm-3"></div>
-    </div>
-  </div>
+	<div class="row">
+		<div class="col-sm-3"></div>
+		<div class="col-sm-6">
+			<div class="card">
+				<img class="card-img-top" style="max-height: 300px;" src="../assets/banner.webp" alt="Card Image">
+				<div class="card-body">
+					<ng-container *ngIf="!isConverting">
+						<form (ngSubmit)="onSubmit(videoForm)" #videoForm="ngForm">
+							<div class="card-body">
+								<h4 class="card-title text-center" style="font-family: 'Permanent Marker', cursive;">
+									Paste Youtube Video Link below</h4>
+								<input class="form-control" type="text" ngModel name="link"
+									placeholder="Paste Link here..." id="link" #link="ngModel" required
+									[class.is-invalid]="(link.dirty || link.touched) && link.invalid"
+									[class.is-valid]="(link.dirty || link.touched) && !link.invalid" />
+								<small class="text-danger" *ngIf="link.invalid && (link.dirty || link.touched)">
+									Please Enter a Video Link!
+								</small>
+								<br>
+								<button type="submit" [disabled]="videoForm.invalid"
+									class="btn btn-primary btn-block custom-button">CONVERT</button>
+							</div>
+						</form>
+					</ng-container>
+					<ng-container *ngIf="isConverting && !hasDownloaded">
+						<br>
+						<p style="font-weight: bolder;">Your Video is being converted. Please wait...</p>
+						<div class="progress" style="position: relative;">
+							<div class="progress-bar progress-bar-striped progress-bar-animated"
+								[ngStyle]="{'width': progress+'%'}"></div>
+						</div>
+						<br />
+						<p><b>Time Remaining:</b> {{remTime.mins + ' mins ' + remTime.secs + '
+							secs'}}<br /><b>Conversion Speed: </b>{{speed}} KB/s</p>
+					</ng-container>
+					<ng-container *ngIf="message && message.text">
+						<br>
+						<div class="alert alert-{{message.type}}" role="alert">
+							<strong>{{message.text}}</strong>
+						</div>
+					</ng-container>
+					<ng-container *ngIf="hasDownloaded">
+						<br>
+						<button type="button" class="btn btn-success btn-block custom-button"
+							(click)="checkAndDownload()" [disabled]="isDownloading">Download Now</button>
+						<button type="button" class="btn btn-secondary btn-block custom-button"
+							(click)="resetEverything()">Convert Another</button>
+					</ng-container>
+					<ng-container *ngIf="disconnected">
+						<br>
+						<div class="alert alert-danger" role="alert">
+							<strong><em>{{connectionMessage}}</em></strong>
+						</div>
+					</ng-container>
+					<ng-container *ngIf="maintenance">
+						<br>
+						<div class="alert alert-secondary" role="alert">
+							<strong><em>The Server is Under Maintenance. Please Try Converting / Downloading
+									Later.</em></strong>
+						</div>
+					</ng-container>
+				</div>
+			</div>
+			<div class="col-sm-3"></div>
+		</div>
+	</div>
+	<div class="text-center">
+		Last Updated: {{lastUpdated}}
+	</div>
+</div>
